@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
-
+//changes
 use Illuminate\Http\Request;
 use App\Models\User;
-
+use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 
 
 class UserController extends Controller
@@ -17,7 +17,7 @@ class UserController extends Controller
     public function index()
     {
         //
-        $users=User::select('name')->get()->take(5);
+        $users=User::all();
         return $users;
     }
 
@@ -37,9 +37,15 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
         //
+        $user = User::create([
+            "name"=>$request->name,
+            "email"=>$request->email,
+            "password"=>bcrypt($request->password),
+        ]);
+        return $user;
     }
 
     /**
@@ -51,6 +57,9 @@ class UserController extends Controller
     public function show($id)
     {
         //
+        $users=User::find($id);
+        return $users;
+
     }
 
     /**
@@ -62,6 +71,7 @@ class UserController extends Controller
     public function edit($id)
     {
         //
+
     }
 
     /**
@@ -71,9 +81,16 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, $id)
     {
         //
+        $user = User::find($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        return $user;
     }
 
     /**
@@ -85,5 +102,19 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+        $user = User::find($id);
+        $user->delete();
+
+        return $user;
     }
+
+    public function list($param)
+    {
+        //
+        $user = User::find('name', 'like', '%' .$param. '%');
+        $user->get();
+
+        return $user;
+    }
+
 }
